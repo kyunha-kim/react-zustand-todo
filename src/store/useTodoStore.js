@@ -1,6 +1,7 @@
 import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
 
-export const useTodoStore = create((set) => ({
+let todoStore = (set) => ({
   todos: [],
   addTodo: (todoText) =>
     set((state) => ({
@@ -27,7 +28,15 @@ export const useTodoStore = create((set) => ({
         }
       }),
     })),
-}));
+});
+
+todoStore = devtools(todoStore);
+todoStore = persist(todoStore, {
+  name: "todoStorage",
+  getStorage: () => sessionStorage,
+});
+
+export const useTodoStore = create(todoStore);
 
 let id = 0;
 function getId() {
